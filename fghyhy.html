@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анимация текста с музыкой</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        .lyrics-container {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 1.6;
+            display: none; 
+        }
+        
+        .gold-text {
+            color: #b161a3;
+        }
+        
+        .orange-text {
+            color: #700054;
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 24px;
+            background-color: #fff;
+            margin-left: 2px;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .hidden {
+            display: none;
+        }
+        
+        .audio-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+        .audio-controls button {
+            padding: 10px 20px; 
+            background: #b161a3; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer;
+            font-size: 16px; 
+            transition: background-color 0.3s ease; 
+        }
+        .audio-controls button:hover {
+            background-color: #700054; 
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="backgroundAudio" loop>
+        <source src="ааа.mp3" type="audio/mpeg">
+       
+        Ваш браузер не поддерживает аудио.
+    </audio>
+    
+    <div class="audio-controls" id="audioControls">
+        <button id="playButton">click bro ;) </button>
+    </div>
+
+    <div class="lyrics-container" id="lyricsContainer">
+        <span id="currentLine"></span>
+        <span class="cursor" id="cursor"></span>
+    </div>
+
+    <script>
+        const lyrics = [
+            { text: "I wanna da-", charDelay: 60, lineDelay: 200 },
+            { text: "I wanna dance in the lights", charDelay: 60, lineDelay: 1000 },
+            { text: "I wanna ro-", charDelay: 80, lineDelay: 200 },
+            { text: "I wanna rock your body", charDelay: 80, lineDelay: 1200 },
+            { text: "I wanna go", charDelay: 80, lineDelay: 200 },
+            { text: "I wanna go for a ride", charDelay: 70, lineDelay: 800 },
+            { text: "Hop in the music and", charDelay: 70, lineDelay: 200 },
+            { text: "Rock your body", charDelay: 80, lineDelay: 650 },
+            { text: "Rock that body", charDelay: 69, lineDelay: 180 },
+            { text: "come on, come on", charDelay: 35, lineDelay: 100 },
+            { text: "Rock that body", charDelay: 50, lineDelay: 300 },
+            { text: "Rock your body", charDelay: 30, lineDelay: 400 },
+            { text: "Rock that body", charDelay: 49, lineDelay: 300 },
+            { text: "come on, come on", charDelay: 35, lineDelay: 100 },
+            { text: "Rock that body", charDelay: 80, lineDelay: 180 },
+            { text: "Rock that body", charDelay: 69, lineDelay: 180 },
+            { text: "come on, come on", charDelay: 35, lineDelay: 100 },
+            { text: "Rock that body", charDelay: 50, lineDelay: 150 },
+            { text: "Rock your body", charDelay: 30, lineDelay: 300 },
+            { text: "Rock that body", charDelay: 49, lineDelay: 300 },
+            { text: "come on, come on", charDelay: 35, lineDelay: 100 },
+            { text: "Rock that body", charDelay: 80, lineDelay: 5000 }
+        ];
+
+        const currentLineElement = document.getElementById('currentLine');
+        const cursorElement = document.getElementById('cursor');
+        const audio = document.getElementById('backgroundAudio');
+        const playButton = document.getElementById('playButton');
+        const audioControls = document.getElementById('audioControls');
+        const lyricsContainer = document.getElementById('lyricsContainer');
+
+       
+        async function startExperience() {
+           
+            audioControls.classList.add('hidden'); 
+           
+            lyricsContainer.style.display = 'block';
+
+            try {
+                
+                await audio.play(); 
+                console.log('Музыка запущена.');
+            } catch (error) {
+                console.warn('Автовоспроизведение заблокировано или произошла ошибка:', error);
+               
+            }
+            
+            
+            await typeLyrics(); 
+        }
+
+        async function typeLyrics() {
+            cursorElement.classList.remove('hidden');
+            
+            for (const line of lyrics) {
+                currentLineElement.innerHTML = '';
+                
+                
+                const spanClass = line.text.includes("Rock your body") ? 'orange-text' : 'gold-text';
+
+                for (const char of line.text) {
+                    const span = document.createElement('span');
+                    span.className = spanClass; 
+                    span.textContent = char;
+                    currentLineElement.appendChild(span);
+                    
+                    await new Promise(resolve => setTimeout(resolve, line.charDelay));
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, line.lineDelay));
+                
+                if (line !== lyrics[lyrics.length - 1]) {
+                    currentLineElement.innerHTML = '';
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                }
+            }
+            
+            cursorElement.classList.add('hidden');
+        }
+
+       
+        document.addEventListener('DOMContentLoaded', () => {
+            playButton.addEventListener('click', startExperience);
+        });
+    </script>
+</body>
+</html>
+
+
